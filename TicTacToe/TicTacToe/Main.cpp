@@ -2,7 +2,7 @@
  ** This is a simple console application. You may play with a friend 
  ** or play against the Computer. As you notice, I put my funtions at the 
  ** top above my Main, but I did comment throughout the code to follow along. 
- ** I have in a turn based still using a while (true) loop. The game is built
+ ** I have the game in a turn based style using a while (true) loop. The game is built
  ** to perform checks after each move. I was told the 'goto' shouldn't be used,
  ** but you'll notice I used to a fair amount. They are labeled fairly well 
  ** (but I'm biased haha). If you have idea for cleaning up the code and making it
