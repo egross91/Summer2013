@@ -43,9 +43,7 @@ bool win(char pieces[])
 		return true;
 	}
 	else
-	{
 		return false;
-	}
 }
 
 // ---------- FULL -------------- Checks to see if the board is full.
@@ -55,9 +53,7 @@ bool full(char pieces[9])
 	for (int i = 0; i < 9; ++i)
 	{
 		if (pieces[i] == 1)
-		{
-			return false;
-		}
+			return false;	
 	}
 	return true;
 }
@@ -70,17 +66,13 @@ bool playAgain()
 		char s;
 		cout << "Would you like to play again? (Y/N):  "; cin >> s;
 		if (s == 'y' || s == 'Y')
-		{
 			return true;
-		}
+	
 		else if (s == 'n' || s == 'N')
-		{
 			return false;
-		}
+	
 		else
-		{
 			cout << "Please choose Y or N." << endl << endl;
-		}
 	}
 }
 
@@ -105,9 +97,8 @@ void playWithFriend()
 	char playPieces [9];
 	// Fill the board with empty spaces.
 	for (int i = 0; i < 9; ++i)
-	{
-		playPieces[i] = 1;
-	}
+			playPieces[i] = 1;
+	
 	cout << endl;
 	while (true)
 	{
@@ -115,15 +106,14 @@ void playWithFriend()
 		PLAYER1:
 		// Where the play with put their piece.
 		int block;
-		cout << "***** Player 1's Move *****" << endl;
+		cout << "***** " << pl1.getName() << "'s Move *****" << endl;
 		cout << "Block :  "; cin >> block;
 		--block;
 	
 		// Check to see if the block is playable and within bounds.
 		if (playPieces[block] == 1 && (block < 9 && block >= 0))
-		{
 			playPieces[block] = 'X';
-		}
+		
 		// Make them choose again if not.
 		else
 		{
@@ -136,32 +126,29 @@ void playWithFriend()
 		{
 			cout << pl1.getName() << " WINS!!!" << endl << endl;
 			if (playAgain())
-			{
 				goto GAME;
-			}
+			
 			break;
 		}
 		else if (!win(playPieces) && full(playPieces))
 		{
 			cout << "AHHHHH!!! Cat's game! :(" << endl << endl;
 			if (playAgain())
-			{
 				goto GAME;
-			}
+			
 			break;
 		}
 		// Player 2's Turn.
 		PLAYER2:
 		// So they can't just hit enter with a left over value of block.
 		block = -1;
-		cout << "***** Player 2's Move *****" << endl;
+		cout << "***** " << pl2.getName() << "'s Move *****" << endl;
 		cout << "Block :  "; cin >> block;
 		--block;
 		// Play if it's a valid spot.
 		if (playPieces[block] == 1 && (block < 9 && block >= 0))
-		{
 			playPieces[block] = 'O';
-		}
+		
 		// Make them re-try if not.
 		else
 		{
@@ -176,9 +163,8 @@ void playWithFriend()
 			cout << pl2.getName() << " WINS!!!" << endl << endl;
 			// If they want to play again, then go back to the beginning of the game with an "empty" board.
 			if (playAgain())
-			{
 				goto GAME;
-			}
+			
 			// Break to Menu if they do not want to play again.
 			break;
 		}
@@ -187,9 +173,8 @@ void playWithFriend()
 		{
 			cout << "AHHHHH!!! Cat's game! :(" << endl << endl;
 			if (playAgain())
-			{
 				goto GAME;
-			}
+			
 			break;
 		}
 	}
@@ -217,7 +202,6 @@ void playComputer()
 	GAME:
 	// Board Pieces.
 	char playPieces [9];
-	std::vector<int> pMoves;
 	for (int i = 0; i < 9; ++i)
 	{
 		playPieces[i] = 1;
@@ -233,10 +217,7 @@ void playComputer()
 		cout << "Block :  "; cin >> block;
 		--block;
 		if (playPieces[block] == 1 && (block < 9 && block >= 0))
-		{
 			playPieces[block] = 'X';
-			pMoves.push_back(block);
-		}
 		else
 		{
 			cout << "Please make another selection." << endl << endl;
@@ -247,28 +228,26 @@ void playComputer()
 		{
 			cout << pl1.getName() << " WINS!!!" << endl << endl;
 			if (playAgain())
-			{
 				goto GAME;
-			}
+
 			break;
 		}
 		else if (!win(playPieces) && full(playPieces))
 		{
 			cout << "AHHHHH!!! Cat's game! :(" << endl << endl;
 			if (playAgain())
-			{
 				goto GAME;
-			}
+			
 			break;
 		}
+		cout << "Enter to Continue." << endl << endl;
+		_getch();
 		// Computer's Turn.
-		cout << endl << endl;
 		cout << "***** Computer's Move *****" << endl;
 		// Call the function for the ComputerAI to make it's selection.
-		block = compAI.makeMove(playPieces, pMoves);
+		block = compAI.makeMove(playPieces);
 		// Create it's game piece.
 		playPieces[block] = 'O';
-		pMoves.push_back(block);
 		// Print the current game.
 		gameBoard->printBoard(playPieces);
 		// Checks for wins and losses and play agains.
@@ -276,18 +255,16 @@ void playComputer()
 		{
 			cout << compAI.getName() << " WINS!!!" << endl << endl;
 			if (playAgain())
-			{
 				goto GAME;
-			}
+			
 			break;
 		}
 		else if (!win(playPieces) && full(playPieces))
 		{
 			cout << "AHHHHH!!! Cat's game! :(" << endl << endl;
 			if (playAgain())
-			{
 				goto GAME;
-			}
+			
 			break;
 		}
 	}
