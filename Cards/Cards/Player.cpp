@@ -1,8 +1,8 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player(std::string n) : name(n), hand(NULL) { }
-Player::Player(std::string n, std::vector<Card> h) : name(n), hand(h) { }
+Player::Player(std::string n) : name(n), hand1(NULL), hand2(NULL) { }
+Player::Player(std::string n, std::vector<Card> h) : name(n), hand1(h), hand2(NULL) { }
 
 // Ask the Player if they would like to Stay or Hit().
 bool Player::hit()
@@ -19,23 +19,35 @@ bool Player::hit()
 			std::cout << "Please make a choice." << std::endl << std::endl;
 	}
 }
-void Player::takeCard(Card theCard)
+void Player::takeCard1(Card theCard)
 {
-	hand.push_back(theCard);
+	hand1.push_back(theCard);
+}
+void Player::takeCard2(Card theCard)
+{
+	hand2.push_back(theCard);
 }
 void Player::setName(std::string n)
 {
 	this->name = n;
 }
-void Player::setHand(std::vector<Card> h)
+void Player::setHand1(std::vector<Card> h)
 {
-	this->hand = h;
+	this->hand1 = h;
 }
-void Player::printHand()
+void Player::setHand2(std::vector<Card> h)
 {
-	for (unsigned int i = 0; i < hand.size(); ++i)
-	{
-		std::cout << hand[i].toString();
-	}
+	this->hand2 = h;
+}
+void Player::printHand1()
+{
+	for (unsigned int i = 0; i < hand1.size(); ++i)
+		std::cout << hand1[i].toString();
+	std::cout << std::endl;
+}
+void Player::printHand2()
+{
+	for (unsigned int i = 0; i < hand2.size(); ++i)
+		std::cout << hand2[i].toString();
 	std::cout << std::endl;
 }

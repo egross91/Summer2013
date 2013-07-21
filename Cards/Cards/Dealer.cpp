@@ -1,4 +1,5 @@
 #include "Dealer.h"
+#include <iostream>
 #include <string>
 
 Dealer::Dealer() : dealerDeck(Deck()), super(std::string("Dealer")) { }

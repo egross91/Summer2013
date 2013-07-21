@@ -1,11 +1,3 @@
-/*
-*  This is supposed to play BlackJack and
-*  Poker, but I have yet to get to Poker, because
-*  I have been refining the rest of BlackJack. It has
-*  been coming along really nicely too. 
-*
-*  P.S. Bear with me.
-*/
 #include "BlackJack.h"
 #include <iostream>
 #include <conio.h>
