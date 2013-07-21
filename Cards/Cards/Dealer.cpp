@@ -15,6 +15,16 @@ Card Dealer::dealCard()
 	return retCard;
 }
 
+void Dealer::swapCards(Player& turn, std::vector<int> indexes)
+{
+	// Erase the old Cards, in the appropriate indexes.
+	turn.discard1(indexes);
+
+	// Replace the erased Cards.
+	for (unsigned int i = 0; i < indexes.size(); i++)
+		turn.takeCard1(dealCard());
+}
+
 void Dealer::setDeck(Deck d)
 {
 	this->dealerDeck = d;

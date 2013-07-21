@@ -1,4 +1,5 @@
 #include "BlackJack.h"
+#include "Poker.h"
 #include <iostream>
 #include <conio.h>
 
@@ -22,6 +23,12 @@ int main(int argc, char * argv[])
 		}
 		else if (selection == 'p' || selection == 'P')
 		{
+			Poker * game = new Poker();
+			game->play();
+			delete game;
+		}
+		else if (selection == 't' || selection == 'T')
+		{
 			cout << "Under construction. . ." << endl << endl;
 		}
 		else if (selection == 'q' || selection == 'Q')
@@ -42,6 +49,7 @@ void menu()
 	cout << "***** Cards *****" << endl;
 	cout << "(B)lackJack" << endl;
 	cout << "(P)oker" << endl;
+	cout << "(T)exas Holdem" << endl;
 	cout << "(Q)uit" << endl << endl;
 }
 

@@ -14,6 +14,7 @@ public:
 	Dealer(Deck);
 	Card dealCard();
 	Deck getDeck() { return dealerDeck; }
+	void swapCards(Player&, std::vector<int>);
 	void setDeck(Deck);
 };
 

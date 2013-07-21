@@ -19,9 +19,10 @@ public:
 	std::string getName() { return name; }
 	std::vector<Card> getHand1() { return hand1; }
 	std::vector<Card> getHand2() { return hand2; }
+	void setName(std::string);
 	void takeCard1(Card);
 	void takeCard2(Card);
-	void setName(std::string);
+	void discard1(std::vector<int>);
 	void setHand1(std::vector<Card>);
 	void setHand2(std::vector<Card>);
 	void printHand1();

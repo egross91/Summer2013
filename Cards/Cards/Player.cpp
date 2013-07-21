@@ -27,6 +27,16 @@ void Player::takeCard2(Card theCard)
 {
 	hand2.push_back(theCard);
 }
+void Player::discard1(std::vector<int> indexes)
+{
+	std::vector<Card>::iterator itr;
+	int offset = 0;
+	for (unsigned int i = 0; i < indexes.size(); ++i)
+	{
+		itr = hand1.begin();
+		hand1.erase(itr + (indexes[i] - offset++));
+	}
+}
 void Player::setName(std::string n)
 {
 	this->name = n;
