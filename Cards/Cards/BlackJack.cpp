@@ -57,7 +57,6 @@ void BlackJack::play()
 			cout << endl << endl;
 			cout << player_vec[i].getName() << "\'s Turn" << endl;
 			player_vec[i].printHand1();
-			vector<Player>::iterator itr = player_vec.begin();
 			while (true)
 			{
 				// Does i-th Player already have 21?
@@ -92,7 +91,7 @@ void BlackJack::play()
 				}
 			}
 		}
-		// Allow the Dealer to take their turn. Delete theDealer if he loses.
+		// Allow the Dealer to take their turn. NULL theDealer if he loses.
 		if (!dealersTurn(theDealer))
 			theDealer = NULL;
 				
@@ -131,7 +130,7 @@ int BlackJack::countHand(vector<Card> hand)
 	{
 		if (hand[i].getRank() == 10 || hand[i].getRank() == 11 || hand[i].getRank() == 12 || hand[i].getRank() == 13)
 			sum += 10;
-		else if (hand[i].getRank() == 1)
+		else if (hand[i].getRank() == 14)
 		{
 			if (sum > 10)
 				sum += 1;

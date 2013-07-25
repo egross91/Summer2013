@@ -74,7 +74,9 @@ void Poker::play()
 						cout << "You have to discard at least 1 card." << endl;
 						num = 1;
 					}
-					// Store the indexes of the cards to erase.
+					// Store the indexes of the cards to erase. 
+					// ** Used a list<> because it's easier to sort the indexes and then erase_cards.
+					// ** Using unsorted indexes causes errors in erasing the erase_cards 
 					list<int> erase_cards;
 					int index;
 					for (int j = 0; j < num; ++j)
@@ -82,7 +84,7 @@ void Poker::play()
 						while (true) 
 						{
 							// Ask which cards the Player would like to discard().
-							cout << "Erase Card " << "(" << (j+1) << "):  "; cin >> index;
+							cout << "Erase Card " << (j+1) << ":  "; cin >> index;
 							if (index > 0 && index < 6)
 							{
 								// Get a good index, and store it properly.
@@ -130,10 +132,14 @@ void Poker::play()
 		}
 
 		if (!playAgain())
+		{
+			delete theDealer;
 			break;
+		}
+		delete theDealer;
 	}
 }
-
+// determineHand() of every Player and printResult() of the Hand.
 void Poker::printResult(vector<Card> hand)
 {
 	int result = determineHand(hand);
@@ -168,7 +174,7 @@ void Poker::printResult(vector<Card> hand)
 	else
 		cout << "** Straight Flush **" << endl << endl;
 }
-
+// What kind of Hand does everyone have?
 int Poker::determineHand(vector<Card> hand)
 {
 	if (flush(hand) && straight(hand)) // Straight Flush.
@@ -256,7 +262,7 @@ bool Poker::pair(vector<Card> hand)
 		return true;
 	return false;
 }
-
+// Does the Player want to fold()?
 bool Poker::fold()
 {
 	char selection [10];
@@ -271,7 +277,7 @@ bool Poker::fold()
 			cout << "Please choose Y or N." << endl << endl;
 	}
 }
-
+// Does everyone, or someone wanna playAgain()?
 bool Poker::playAgain()
 {
 	char selection [10];
@@ -292,7 +298,7 @@ bool Poker::playAgain()
 			cout << "Please choose Y or N." << endl << endl;
 	}
 }
-
+// Erase losing Players.
 void Poker::erasePlayers(vector<Player>& players, vector<int> indexes)
 {
 	int offset = 0;
