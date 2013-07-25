@@ -15,7 +15,7 @@ Card Dealer::dealCard()
 	return retCard;
 }
 
-void Dealer::swapCards(Player& turn, std::vector<int> indexes)
+void Dealer::swapCards(Player& turn, std::list<int> indexes)
 {
 	// Erase the old Cards, in the appropriate indexes.
 	turn.discard1(indexes);

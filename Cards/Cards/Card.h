@@ -6,14 +6,14 @@
 class Card
 {
 protected:
-	std::string rank, suit;
+	int rank, suit;
 public:
 	Card();
-	Card(std::string, std::string);
-	std::string getRank() { return rank; }
-	std::string getSuit() { return suit; }
-	void setRank(std::string);
-	void setSuit(std::string);
+	Card(int, int);
+	int getRank() { return rank; }
+	int getSuit() { return suit; }
+	void setRank(int);
+	void setSuit(int);
 	std::string toString();
 };
 

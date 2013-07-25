@@ -10,7 +10,15 @@ private:
 public:
 	Poker();
 	void play();
-	void determineHand(std::vector<Card>);
+	void printResult(std::vector<Card>);
+	int determineHand(std::vector<Card>);
+	bool flush(std::vector<Card>);
+	bool straight(std::vector<Card>);
+	bool fourOfAKind(std::vector<Card>);
+	bool fullHouse(std::vector<Card>);
+	bool threeOfAKind(std::vector<Card>);
+	bool twoPair(std::vector<Card>);
+	bool pair(std::vector<Card>);
 	bool fold();
 	bool playAgain();
 	void erasePlayers(std::vector<Player>&, std::vector<int>);

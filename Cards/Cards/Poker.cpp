@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <list>
 
 using namespace std;
 
@@ -16,16 +17,16 @@ void Poker::play()
 		vector<Player> players;
 		// How many Players are there going to be?
 		int nPlayers;
-		cout << "How many Players will be playing? (2-7) :  "; cin >> nPlayers;
+		cout << "How many Players will be playing? (2-6) :  "; cin >> nPlayers;
 		if (nPlayers < 2)
 		{
 			cout << "There has to be a minimum of 2 Players.\nThere are 2 Players playing." << endl << endl;
 			nPlayers = 2;
 		}
-		else if (nPlayers > 7)
+		else if (nPlayers > 6)
 		{
-			cout << "There is a maximum of 7 Players.\nThere are 7 Players playing." << endl << endl;
-			nPlayers = 7;
+			cout << "There is a maximum of 6 Players.\nThere are 6 Players playing." << endl << endl;
+			nPlayers = 6;
 		}
 		players.reserve(nPlayers);
 
@@ -40,11 +41,10 @@ void Poker::play()
 			players.push_back(pl_i);
 		}
 		// Deal every Player their respective hand.
-		for (unsigned int i = 0; i < 5; ++i)
+		for (unsigned int i = 0; i < 5; ++i) // Number of Cards.
 		{
-			for (int j = 0; j < nPlayers; ++j)
+			for (int j = 0; j < nPlayers; ++j) // For n number of Players.
 				players[j].takeCard1(theDealer->dealCard());
-
 		}
 		cout << endl << endl << endl;
 		// Each Player will now take their turn.
@@ -52,13 +52,14 @@ void Poker::play()
 		vector<int> erase_player_indexes;
 		for (unsigned int i = 0; i < players.size(); ++i)
 		{
+			// Print i-th Player's name and hand.
 			cout << players[i].getName() << "\'s Turn!" << endl << endl;
-			players[i].printHand1();
+			players[i].printHand();
 			char selection [10];
 			// Begin turn.
 			while (true)
 			{
-				cout << "Would you like to discard any cards? (y/n) :  "; cin >> selection;
+				cout << "\n\n\n\nWould you like to discard any cards? (y/n) :  "; cin >> selection;
 				if (selection[0] == 'y' || selection[0] == 'Y')
 				{
 					int num;
@@ -74,15 +75,17 @@ void Poker::play()
 						num = 1;
 					}
 					// Store the indexes of the cards to erase.
-					vector<int> erase_cards;
+					list<int> erase_cards;
 					int index;
 					for (int j = 0; j < num; ++j)
 					{
 						while (true) 
 						{
-							cout << "Erase Card :  "; cin >> index;
+							// Ask which cards the Player would like to discard().
+							cout << "Erase Card " << "(" << (j+1) << "):  "; cin >> index;
 							if (index > 0 && index < 6)
 							{
+								// Get a good index, and store it properly.
 								erase_cards.push_back(--index);
 								break;
 							}
@@ -90,14 +93,20 @@ void Poker::play()
 								cout << "Please choose between 1 and 5." << endl << endl;
 						}
 					}
+					// Erase and discard() the desired cards.
+					erase_cards.sort();
 					theDealer->swapCards(players[i], erase_cards);
-					cout << players[i].getName() << " NEW Hand" << endl << endl;
-					players[i].printHand1();
+					// Print i-th Player's NEW hand.
+					cout << players[i].getName() << "\'s NEW Hand" << endl << endl;
+					players[i].printHand();
+					// Does i-th Player want to fold() at the end of their turn?
 					if (fold())
 						erase_player_indexes.push_back(i);
+					// End complete turn.
 					cout << endl << endl << endl;
 					break;
 				}
+				// End the Player's turn if they choose to keep the hand they were initially dealt.
 				else if (selection[0] == 'n' || selection[0] == 'N')
 				{
 					cout << endl << endl; 
@@ -107,18 +116,145 @@ void Poker::play()
 					cout << "Please choose Y or N." << endl << endl;
 			}
 		}
+		// Erase whatever Players that fold()'d, if anyone did.
 		if (erase_player_indexes.size() > 0)
 			erasePlayers(players, erase_player_indexes);
 
-		for (unsigned int i = 0; i < players.size(); ++i)
+		// Sort every Player's hand, and print it.
+		for (auto& player : players)
 		{
-			cout << players[i].getName() << " Hand" << endl << endl;
-			players[i].printHand1();
+			player.quickSortHand(0, 4);
+			cout << player.getName() << "\'s Hand" << endl << endl;
+			player.printHand();
+			printResult(player.getHand1());
 		}
 
 		if (!playAgain())
 			break;
 	}
+}
+
+void Poker::printResult(vector<Card> hand)
+{
+	int result = determineHand(hand);
+
+	if (result == 0) // If the Player has nothing but a single high card.
+	{
+		int max = 0, index = 0;
+		for (unsigned int i = 0; i < 5; ++i)
+		{
+			if (max < hand[i].getRank())
+			{
+				max = hand[i].getRank();
+				index = i;
+			}
+		}
+		cout << "** " << hand[index].toString() << " - High Card **" << endl;
+	}
+	else if (result == 1)
+		cout << "** One Pair **" << endl << endl;
+	else if (result == 2)
+		cout << "** Two Pair **" << endl << endl;
+	else if (result == 3)
+		cout << "** Three of a Kind **" << endl << endl;
+	else if (result == 4)
+		cout << "** Straight **" << endl << endl;
+	else if (result == 5)
+		cout << "** Flush **" << endl << endl;
+	else if (result == 6)
+		cout << "** Full House **" << endl << endl;
+	else if (result == 7)
+		cout << "** Four of a Kind **" << endl << endl;
+	else
+		cout << "** Straight Flush **" << endl << endl;
+}
+
+int Poker::determineHand(vector<Card> hand)
+{
+	if (flush(hand) && straight(hand)) // Straight Flush.
+		return 8;
+	else if (fourOfAKind(hand)) // Four of a Kind.
+		return 7;
+	else if (fullHouse(hand)) // Full House.
+		return 6;
+	else if (flush(hand)) // Flush.
+		return 5;
+	else if (straight(hand)) // Straight.
+		return 4;
+	else if (threeOfAKind(hand)) // Three of a Kind
+		return 3;
+	else if (twoPair(hand)) // Two Pair
+		return 2;
+	else if (pair(hand)) // Pair
+		return 1;
+	return 0; // Nothing - High card.
+}
+// Check if there is a flush().
+bool Poker::flush(vector<Card> hand)
+{
+	if (hand[0].getSuit() == hand[1].getSuit() && hand[1].getSuit() == hand[2].getSuit() && hand[2].getSuit() == hand[3].getSuit() && hand[3].getSuit() == hand[4].getSuit())
+		return true;
+	return false;
+}
+// Check if there is a straight().
+bool Poker::straight(vector<Card> hand)
+{
+	if ((hand[4].getRank() - hand[3].getRank()) == 1 && (hand[3].getRank() - hand[2].getRank()) == 1 && (hand[2].getRank() - hand[1].getRank()) == 1 && (hand[1].getRank() - hand[0].getRank()) == 1)
+		return true;
+	return false;
+}
+// Check if there is a fourOfAKind().
+bool Poker::fourOfAKind(vector<Card> hand)
+{
+	for (unsigned int i = 0; i < 2; ++i)
+	{
+		if (hand[i].getRank() == hand[i+1].getRank() && hand[i+1].getRank() == hand[i+2].getRank() && hand[i+2].getRank() == hand[i+3].getRank())
+			return true;
+	}
+	return false;
+}
+// Check if there is a fullHouse().
+bool Poker::fullHouse(vector<Card> hand)
+{
+	if ((hand[0].getRank() == hand[1].getRank() && hand[1].getRank() == hand[2].getRank() && hand[3].getRank() == hand[4].getRank()) ||
+		(hand[0].getRank() == hand[1].getRank() && hand[2].getRank() == hand[3].getRank() && hand[3].getRank() == hand[4].getRank()))
+		return true;
+	return false;
+}
+// Check if there is a threeOfAKind().
+bool Poker::threeOfAKind(vector<Card> hand)
+{
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		if (hand[i].getRank() == hand[i+1].getRank() && hand[i+1].getRank() == hand[i+2].getRank())
+			return true;
+	}
+	return false;
+}
+// Check if there is a twoPair().
+bool Poker::twoPair(vector<Card> hand)
+{
+	bool pair_one = false, pair_two = false;
+	for (unsigned int i = 0; i < 4; ++i)
+	{
+		if (hand[i].getRank() == hand[i+1].getRank() && !pair_one)
+			pair_one = true;
+		else if (hand[i].getRank() == hand[i+1].getRank() && pair_one)
+			pair_two = true;
+	}
+	if (pair_two)
+		return true;
+	return false;
+}
+// Check if there is a pair().
+bool Poker::pair(vector<Card> hand)
+{
+	if (hand[0].getRank() == hand[1].getRank() || 
+		hand[1].getRank() == hand[2].getRank() || 
+		hand[2].getRank() == hand[3].getRank() || 
+		hand[3].getRank() == hand[4].getRank())
+		return true;
+	return false;
 }
 
 bool Poker::fold()
@@ -164,7 +300,6 @@ void Poker::erasePlayers(vector<Player>& players, vector<int> indexes)
 	for (unsigned int i = 0; i < indexes.size(); ++i)
 	{
 		itr = players.begin();
-		players.erase(itr + (indexes[i]-offset));
-		++offset;
+		players.erase(itr + (indexes[i]-offset++));
 	}
 }

@@ -92,8 +92,9 @@ void BlackJack::play()
 				}
 			}
 		}
-		// Allow the Dealer to take their turn.
-		dealersTurn(theDealer);
+		// Allow the Dealer to take their turn. Delete theDealer if he loses.
+		if (!dealersTurn(theDealer))
+			theDealer = NULL;
 				
 		// Get rid of the Player's that already lost, if there are any.
 		if (ePlayers.size() > 0)
@@ -110,14 +111,15 @@ void BlackJack::play()
 		{
 			cout << "***** The Dealer\'s Hand ***** (" << countHand(theDealer->getHand1()) << ")" << endl;
 			theDealer->printHand1();
-			delete theDealer;
 		}
 		// End game, and ask to play again.
 		if (!playAgain())
 		{
+			delete theDealer;
 			cout << endl << endl << endl << endl << endl;
 			break;
 		}
+		delete theDealer;
 	} 
 }
 // Count the Player's Hand.
@@ -127,25 +129,9 @@ int BlackJack::countHand(vector<Card> hand)
 	bool ace11 = false;
 	for (int i = 0; i < size; ++i)
 	{
-		if (hand[i].getRank() == "Two")
-			sum += 2;
-		else if (hand[i].getRank() == "Three")
-			sum += 3;
-		else if	(hand[i].getRank() == "Four")
-			sum += 4;
-		else if (hand[i].getRank() == "Five")
-			sum += 5;
-		else if (hand[i].getRank() == "Six")
-			sum += 6;
-		else if (hand[i].getRank() == "Seven")
-			sum += 7;
-		else if (hand[i].getRank() == "Eight")
-			sum += 8;
-		else if (hand[i].getRank() == "Nine")
-			sum += 9;
-		else if (hand[i].getRank() == "Ten" || hand[i].getRank() == "Jack" || hand[i].getRank() == "Queen" || hand[i].getRank() == "King")
+		if (hand[i].getRank() == 10 || hand[i].getRank() == 11 || hand[i].getRank() == 12 || hand[i].getRank() == 13)
 			sum += 10;
-		else if (hand[i].getRank() == "Ace")
+		else if (hand[i].getRank() == 1)
 		{
 			if (sum > 10)
 				sum += 1;
@@ -155,6 +141,8 @@ int BlackJack::countHand(vector<Card> hand)
 				ace11 = true;
 			}
 		}
+		else
+			sum += hand[i].getRank();
 	}
 	if (ace11 && sum > 21)
 		sum -= 10;
@@ -178,7 +166,7 @@ bool BlackJack::win(int sum)
 	return false;
 }
 
-void BlackJack::dealersTurn(Dealer *theDealer)
+bool BlackJack::dealersTurn(Dealer *theDealer)
 {
 	cout << endl << endl;
 	cout << "The Dealer\'s Turn" << endl;
@@ -191,7 +179,7 @@ void BlackJack::dealersTurn(Dealer *theDealer)
 		{
 			cout << "The Dealer WON!!!" << endl << endl;
 			_getch();
-			break;
+			return true;
 		}
 		// If the Dealer has less than 17 and less 4 cards, hit.
 		if (countHand(dealersHand) < 17)
@@ -211,21 +199,20 @@ void BlackJack::dealersTurn(Dealer *theDealer)
 		}
 		// If the Dealer "stays," end his turn.
 		else 
-			break;
-
+			return true;
+		dealersHand = theDealer->getHand1();
 		// If the Dealer "hit," check to make sure they won or lost.
 		// If the Dealer won.
 		if (win(countHand(dealersHand)))
 		{
 			cout << "The Dealer WON!!!" << endl << endl;
-			break;
+			return true;
 		}
 		// If the Dealer bust, get rid of them and end their turn.
-		else if (bust(countHand(dealersHand)))
+		if (bust(countHand(dealersHand)))
 		{
 			cout << "The Dealer BUST! :(" << endl  << endl;
-			delete theDealer;
-			break;
+			return false;
 		}
 	}
 }

@@ -13,7 +13,7 @@ public:
 	int countHand(std::vector<Card>);
 	bool bust(int);
 	bool win(int);
-	void dealersTurn(Dealer*);
+	bool dealersTurn(Dealer*);
 	bool playAgain();
 	void erasePlayers(std::vector<Player>&, std::vector<int>);
 };

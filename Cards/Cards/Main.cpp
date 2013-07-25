@@ -17,12 +17,14 @@ int main(int argc, char * argv[])
 		selection = getSelection();
 		if (selection == 'b' || selection == 'B')
 		{
+			cout << "Loading BlackJack..." << endl;
 			BlackJack * game = new BlackJack();
 			game->play();
 			delete game;
 		}
 		else if (selection == 'p' || selection == 'P')
 		{
+			cout << "Loading Poker..." << endl;
 			Poker * game = new Poker();
 			game->play();
 			delete game;
@@ -30,6 +32,7 @@ int main(int argc, char * argv[])
 		else if (selection == 't' || selection == 'T')
 		{
 			cout << "Under construction. . ." << endl << endl;
+			_getch();
 		}
 		else if (selection == 'q' || selection == 'Q')
 		{
