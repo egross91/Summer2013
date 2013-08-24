@@ -98,6 +98,7 @@ void Poker::play()
 					// Erase and discard() the desired cards.
 					erase_cards.sort();
 					theDealer->swapCards(players[i], erase_cards);
+					cout << endl << endl << endl;
 					// Print i-th Player's NEW hand.
 					cout << players[i].getName() << "\'s NEW Hand" << endl << endl;
 					players[i].printHand();
@@ -122,14 +123,22 @@ void Poker::play()
 		if (erase_player_indexes.size() > 0)
 			erasePlayers(players, erase_player_indexes);
 
-		// Sort every Player's hand, and print it.
-		for (auto& player : players)
+		// Sort every Player's hand, figure out what they got, and print it.
+		list<int> results;
+		int max = -1, winner_index = 0, num;
+		for (unsigned int i = 0; i < players.size(); ++i)
 		{
-			player.quickSortHand(0, 4);
-			cout << player.getName() << "\'s Hand" << endl << endl;
-			player.printHand();
-			printResult(player.getHand1());
+			players[i].quickSortHand(0, 4);
+			cout << players[i].getName() << "\'s Hand" << endl << endl;
+			players[i].printHand();
+			num = printResult(players[i].getHand1());
+			if (max < num)
+			{
+				max = num;
+				winner_index = i;
+			}
 		}
+		cout << "THE WINNER IS " << players[winner_index].getName() << "!!!" << endl << endl << endl << endl << endl;
 
 		if (!playAgain())
 		{
@@ -140,7 +149,7 @@ void Poker::play()
 	}
 }
 // determineHand() of every Player and printResult() of the Hand.
-void Poker::printResult(vector<Card> hand)
+int Poker::printResult(vector<Card> hand)
 {
 	int result = determineHand(hand);
 
@@ -155,29 +164,61 @@ void Poker::printResult(vector<Card> hand)
 				index = i;
 			}
 		}
-		cout << "** " << hand[index].toString() << " - High Card **" << endl;
+		cout << "** " << hand[index].toString() << " - High Card **" << endl << endl;
+		return result;
 	}
 	else if (result == 1)
+	{
 		cout << "** One Pair **" << endl << endl;
+		return result;
+	}
 	else if (result == 2)
+	{
 		cout << "** Two Pair **" << endl << endl;
+		return result;
+	}
 	else if (result == 3)
+	{
 		cout << "** Three of a Kind **" << endl << endl;
+		return result;
+	}
 	else if (result == 4)
+	{
 		cout << "** Straight **" << endl << endl;
+		return result;
+	}
 	else if (result == 5)
+	{
 		cout << "** Flush **" << endl << endl;
+		return result;
+	}
 	else if (result == 6)
+	{
 		cout << "** Full House **" << endl << endl;
+		return result;
+	}
 	else if (result == 7)
+	{
 		cout << "** Four of a Kind **" << endl << endl;
-	else
+		return result;
+	}
+	else if (result == 8)
+	{
 		cout << "** Straight Flush **" << endl << endl;
+		return result;
+	}
+	else
+	{
+		cout << "*****	ROYAL FLUSH *****" << endl << endl;
+		return result;
+	}
 }
 // What kind of Hand does everyone have?
 int Poker::determineHand(vector<Card> hand)
 {
-	if (flush(hand) && straight(hand)) // Straight Flush.
+	if (royalFlush(hand)) // Royal Flush.
+		return 9;
+	else if (flush(hand) && straight(hand)) // Straight Flush.
 		return 8;
 	else if (fourOfAKind(hand)) // Four of a Kind.
 		return 7;
@@ -194,6 +235,14 @@ int Poker::determineHand(vector<Card> hand)
 	else if (pair(hand)) // Pair
 		return 1;
 	return 0; // Nothing - High card.
+}
+// Check if there is a royalFlush().
+bool Poker::royalFlush(vector<Card> hand)
+{
+	if (flush(hand) && 
+		(hand[0].getRank() == 10 && hand[1].getRank() == 11 && hand[2].getRank() == 12 && hand[3].getRank() == 13 && hand[4].getRank() == 14))
+		return true;
+	return false;
 }
 // Check if there is a flush().
 bool Poker::flush(vector<Card> hand)
@@ -302,10 +351,9 @@ bool Poker::playAgain()
 void Poker::erasePlayers(vector<Player>& players, vector<int> indexes)
 {
 	int offset = 0;
-	vector<Player>::iterator itr;
 	for (unsigned int i = 0; i < indexes.size(); ++i)
 	{
-		itr = players.begin();
+		vector<Player>::iterator itr = players.begin();
 		players.erase(itr + (indexes[i]-offset++));
 	}
 }

@@ -10,8 +10,9 @@ private:
 public:
 	Poker();
 	void play();
-	void printResult(std::vector<Card>);
+	int printResult(std::vector<Card>);
 	int determineHand(std::vector<Card>);
+	bool royalFlush(std::vector<Card>);
 	bool flush(std::vector<Card>);
 	bool straight(std::vector<Card>);
 	bool fourOfAKind(std::vector<Card>);

@@ -1,7 +1,7 @@
 #include "BlackJack.h"
 #include <iostream>
-#include <vector>
 #include <conio.h>
+#include <vector>
 
 using namespace std;
 
@@ -15,7 +15,7 @@ void BlackJack::play()
 		Dealer * theDealer = new Dealer();
 		vector<Player> player_vec;
 		int nPlayers;
-		cout << "How many players would you like to have? :  "; cin >> nPlayers;
+		cout << "How many players would you like to have? (1-10) :  "; cin >> nPlayers;
 		if (nPlayers > 10)
 		{
 			cout << "Only 10 Players allowed.\nThe new number of Players is 10." << endl;
@@ -55,43 +55,10 @@ void BlackJack::play()
 		for (unsigned int i = 0; i < player_vec.size(); ++i)
 		{
 			cout << endl << endl;
-			cout << player_vec[i].getName() << "\'s Turn" << endl;
-			player_vec[i].printHand1();
-			while (true)
-			{
-				// Does i-th Player already have 21?
-				if (win(countHand(player_vec[i].getHand1())))
-				{
-					cout << player_vec[i].getName() << "\'s WON!!!" << endl;
-					break;
-				}
-				// Does i-th Player want to Hit or Stay? Hit and continue if they do.
-				if (player_vec[i].hit())
-				{
-					Card tmpCard = theDealer->dealCard();
-					player_vec[i].takeCard1(tmpCard);
-					cout << tmpCard.toString() << endl << endl; 
-				}
-				// If i-th Player Stays, then end their turn.
-				else
-					break;
-				// Did i-th Player win?
-				if (win(countHand(player_vec[i].getHand1())))
-				{
-					cout << player_vec[i].getName() << "\'s WON!!!" << endl;
-					break;
-				}
-				// Did i-th Player lose?
-				if (bust(countHand(player_vec[i].getHand1())))
-				{
-					cout << player_vec[i].getName() << " Bust! :(" << endl << endl;
-					ePlayers.push_back(i);
-					_getch();
-					break;
-				}
-			}
+			if(!playersTurn(player_vec[i], theDealer))
+				ePlayers.push_back(i);
 		}
-		// Allow the Dealer to take their turn. NULL theDealer if he loses.
+		// Allow the Dealer to take their turn. NULL theDealer if he bust()'s.
 		if (!dealersTurn(theDealer))
 			theDealer = NULL;
 				
@@ -104,6 +71,11 @@ void BlackJack::play()
 		{
 			cout << "***** " << player_vec[i].getName() << "\'s Hand ***** (" << countHand(player_vec[i].getHand1()) << ")" << endl << endl;
 			player_vec[i].printHand1();
+			if (!player_vec[i].getHand2().empty())
+			{
+				cout << "\t*** Second Hand *** (" << countHand(player_vec[i].getHand2()) << ")" << endl << endl;
+				player_vec[i].printHand2();
+			}
 		}
 		// Print the Dealer's hand, if they haven't lost already.
 		if (theDealer != NULL)
@@ -111,15 +83,35 @@ void BlackJack::play()
 			cout << "***** The Dealer\'s Hand ***** (" << countHand(theDealer->getHand1()) << ")" << endl;
 			theDealer->printHand1();
 		}
+		delete theDealer; theDealer = NULL;
+		cout << endl << endl << endl << endl << endl;
 		// End game, and ask to play again.
 		if (!playAgain())
-		{
-			delete theDealer;
-			cout << endl << endl << endl << endl << endl;
 			break;
-		}
-		delete theDealer;
 	} 
+}
+// Does the Player want to doubleDown(), if they are able to?
+bool BlackJack::splitHand(Player& playa)
+{
+	char selection [10];
+	while (true)
+	{
+		cout << "Would you like to split your hand? (y/n) :  "; cin >> selection;
+		if (selection[0] == 'y' || selection[0] == 'Y')
+		{
+			vector<Card> hand(playa.getHand1());
+			vector<Card> hand_two;
+			hand_two.push_back(hand[0]);
+			list<int> dis(1,0);
+			playa.discard(dis);
+			playa.setHand2(hand_two);
+			return true;
+		}
+		else if (selection[0] == 'n' || selection[0] == 'N')
+			return false;
+		else
+			cout << "Please choose Y or N." << endl << endl;
+	}
 }
 // Count the Player's Hand.
 int BlackJack::countHand(vector<Card> hand)
@@ -148,7 +140,7 @@ int BlackJack::countHand(vector<Card> hand)
 
 	return sum;
 }
-
+// Did the Player bust()?
 bool BlackJack::bust(int sum)
 {
 	if (sum > 21)
@@ -156,7 +148,7 @@ bool BlackJack::bust(int sum)
 
 	return false;
 }
-
+// Did the Player get 21?
 bool BlackJack::win(int sum)
 {
 	if (sum == 21)
@@ -164,7 +156,125 @@ bool BlackJack::win(int sum)
 
 	return false;
 }
-
+// How did the Player do?
+bool BlackJack::playersTurn(Player& playa, Dealer *theDealer)
+{
+	cout << playa.getName() << "\'s Turn" << endl;
+	playa.printHand1();
+	bool dub_down = false;
+	if (playa.getHand1()[0].getRank() == playa.getHand1()[1].getRank()) // Does i-th Player have matching Ranks to doubleDown()?
+	{
+		if (splitHand(playa))
+		{
+			dub_down = true;
+			cout << endl << endl;
+		}
+	}
+	// Start turn.
+	// If the Player doubleDown()'d.
+	if (dub_down) 
+	{
+		while (true)
+		{
+			cout << "\nFirst Hand" << endl;
+			// Does i-th Player want to Hit or Stay? Hit and continue if they do.
+			if (playa.hit())
+			{
+				Card tmpCard = theDealer->dealCard();
+				playa.takeCard1(tmpCard);
+				cout << tmpCard.toString() << endl << endl; 
+			}
+			// If i-th Player Stays, then end their turn.
+			else
+				break;
+			
+			// Did i-th Player win?
+			if (win(countHand(playa.getHand1())))
+			{
+				cout << playa.getName() << " WON!!!" << endl << endl;
+				_getch();
+				break;
+			}
+		
+			// Did i-th Player lose?
+			if (bust(countHand(playa.getHand1())))
+			{
+				cout << playa.getName() << " Bust! :(" << endl << endl;
+				playa.setHand1(vector<Card>(NULL));
+				_getch();
+				break;
+			}
+		}
+		while (true)
+		{
+			cout << "\n\nSecond Hand" << endl;
+			if (playa.hit())
+			{
+				Card tmpCard = theDealer->dealCard();
+				playa.takeCard2(tmpCard);
+				cout << tmpCard.toString() << endl << endl;
+			}
+			else 
+				return true;
+			if (win(countHand(playa.getHand2())))
+			{
+				cout << playa.getName() << " WON!!! (Hand 2)" << endl << endl;
+				_getch();
+				return true;
+			}
+			if (bust(countHand(playa.getHand2())))
+			{
+				cout << playa.getName() << " Bust! :( (Hand 2)" << endl << endl;
+				playa.setHand2(vector<Card>(NULL));
+				_getch();
+				if (playa.getHand1().empty())
+					return false;
+				return true;
+			}
+		}
+	}
+	// If the Player did not doubleDown().
+	else 
+	{
+		while (true)
+		{
+			// Does i-th Player already have 21?
+			if (win(countHand(playa.getHand1())))
+			{
+				cout << playa.getName() << " WON!!!" << endl << endl;
+				_getch();
+				return true;
+			}
+			// Does i-th Player want to Hit or Stay? Hit and continue if they do.
+			if (playa.hit())
+			{
+				Card tmpCard = theDealer->dealCard();
+				playa.takeCard1(tmpCard);
+				cout << tmpCard.toString() << endl << endl; 
+			}
+			// If i-th Player Stays, then end their turn.
+			else
+				return true;
+			
+			// Did i-th Player win?
+			if (win(countHand(playa.getHand1())))
+			{
+				cout << playa.getName() << " WON!!!" << endl << endl;
+				_getch();
+				return true;
+			}
+		
+			// Did i-th Player lose?
+			if (bust(countHand(playa.getHand1())))
+			{
+				cout << playa.getName() << " Bust! :(" << endl << endl;
+				_getch();
+				return false;
+			}
+		}
+	}
+}
+// How did the Dealer do?
 bool BlackJack::dealersTurn(Dealer *theDealer)
 {
 	cout << endl << endl;
@@ -199,23 +309,26 @@ bool BlackJack::dealersTurn(Dealer *theDealer)
 		// If the Dealer "stays," end his turn.
 		else 
 			return true;
+
 		dealersHand = theDealer->getHand1();
 		// If the Dealer "hit," check to make sure they won or lost.
 		// If the Dealer won.
 		if (win(countHand(dealersHand)))
 		{
 			cout << "The Dealer WON!!!" << endl << endl;
+			_getch();
 			return true;
 		}
 		// If the Dealer bust, get rid of them and end their turn.
 		if (bust(countHand(dealersHand)))
 		{
 			cout << "The Dealer BUST! :(" << endl  << endl;
+			_getch();
 			return false;
 		}
 	}
 }
-
+// Does everyone want to playAgain()?
 bool BlackJack::playAgain()
 {
 	char selection [10];
@@ -230,14 +343,13 @@ bool BlackJack::playAgain()
 			cout << "Please choose Y or N." << endl << endl;
 	} 
 }
+// Erase who bust()'d.
 void BlackJack::erasePlayers(vector<Player>& players, vector<int> indexes)
 {
 	unsigned int offset = 0;
-	vector<Player>::iterator itr;
 	for (unsigned int i = 0; i < indexes.size(); ++i)
 	{
-		itr = players.begin();
-		players.erase(itr + (indexes[i] - offset));
-		++offset;
+		vector<Player>::iterator itr = players.begin();
+		players.erase(itr + (indexes[i] - offset++));
 	}
 }

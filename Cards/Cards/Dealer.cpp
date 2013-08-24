@@ -14,11 +14,11 @@ Card Dealer::dealCard()
 	theDeck.erase(itr);
 	return retCard;
 }
-
+// Discard() the desired Cards, then replace those discard()'d Card(s).
 void Dealer::swapCards(Player& turn, std::list<int> indexes)
 {
 	// Erase the old Cards, in the appropriate indexes.
-	turn.discard1(indexes);
+	turn.discard(indexes);
 
 	// Replace the erased Cards.
 	for (unsigned int i = 0; i < indexes.size(); i++)

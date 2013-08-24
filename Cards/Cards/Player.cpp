@@ -5,8 +5,8 @@
 
 using namespace std;
 
-Player::Player(std::string n) : name(n), hand1(NULL) { } //hand2(NULL) 
-Player::Player(std::string n, std::vector<Card> h) : name(n), hand1(h) { } // hand2(NULL) { }
+Player::Player(string n) : name(n), hand1(NULL), hand2(NULL) { }  
+Player::Player(string n, vector<Card> h) : name(n), hand1(h), hand2(NULL) { } 
 
 // Ask the Player if they would like to Stay or Hit().
 bool Player::hit()
@@ -23,24 +23,28 @@ bool Player::hit()
 			std::cout << "Please make a choice." << std::endl << std::endl;
 	}
 }
+// Have the Player take a card for hand1.
 void Player::takeCard1(Card theCard)
 {
 	hand1.push_back(theCard);
 }
-/* void Player::takeCard2(Card theCard)
+// Have the Player take a card for hand2.
+void Player::takeCard2(Card theCard)
 {
 	hand2.push_back(theCard);
-} */
-void Player::discard1(std::list<int> indexes)
+} 
+// Discard the desired cards for hand1.
+void Player::discard(list<int> indexes)
 {
-	std::vector<Card>::iterator c_itr;
-	std::list<int>::iterator i_itr = indexes.begin();
+	vector<Card>::iterator c_itr;
 	int offset = 0;
-	for (unsigned int i = 0; i < indexes.size(); ++i)
+	while (!indexes.empty())
 	{
 		c_itr = hand1.begin();
-		hand1.erase(c_itr + (*i_itr++ - offset++));
+		hand1.erase(c_itr + (indexes.front() - offset++));
+		indexes.pop_front();
 	}
+	
 }
 // Sort the Player's hand for easy analyzing.
 void Player::quickSortHand(int left, int right)
@@ -53,11 +57,10 @@ void Player::quickSortHand(int left, int right)
 		quickSortHand(pivot+1, right);
 	}
 }
+// Partition for quickSortHand().
 int Player::partition(int left, int right)
 {
 	int pivot = hand1[left].getRank();
-	if (pivot == 1) // An Ace
-		pivot = 14;
 	int offset = 0, end = 4;
 	unsigned int j = left+1;
 	int k = left+1;
@@ -72,18 +75,18 @@ int Player::partition(int left, int right)
 	swap(hand1[left], hand1[j-1]);
 	return j-1;
 }
-void Player::setName(std::string n)
+void Player::setName(string n)
 {
 	this->name = n;
 }
-void Player::setHand1(std::vector<Card> h)
+void Player::setHand1(vector<Card> h)
 {
 	this->hand1 = h;
 }
-/* void Player::setHand2(std::vector<Card> h)
+void Player::setHand2(vector<Card> h)
 {
 	this->hand2 = h;
-} */
+}
 // Print hand for Poker().
 void Player::printHand() 
 {
@@ -98,9 +101,9 @@ void Player::printHand1()
 		cout << hand1[i].toString() << endl;
 	cout << endl;
 }
-/* void Player::printHand2()
+void Player::printHand2()
 {
 	for (unsigned int i = 0; i < hand2.size(); ++i)
-		std::cout << hand2[i].toString();
-	std::cout << std::endl;
-} */
+		cout << "\t" << hand2[i].toString() << endl;
+	cout << endl;
+}

@@ -16,10 +16,9 @@ Deck::Deck()
 		}
 	}
 	srand((unsigned int) time(0));
-	int random = rand()%1000;
+	int random = (rand()%100)+1;
 	for (int i = 0; i < random; ++i)
 		shuffle(theDeck);
-
 }
 
 // Shuffle the deck.

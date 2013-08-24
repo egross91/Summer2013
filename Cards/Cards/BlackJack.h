@@ -10,9 +10,11 @@ private:
 public:
 	BlackJack();
 	void play();
+	bool splitHand(Player&);
 	int countHand(std::vector<Card>);
 	bool bust(int);
 	bool win(int);
+	bool playersTurn(Player&, Dealer*);
 	bool dealersTurn(Dealer*);
 	bool playAgain();
 	void erasePlayers(std::vector<Player>&, std::vector<int>);

@@ -15,29 +15,27 @@ int main(int argc, char * argv[])
 	{
 		menu();
 		selection = getSelection();
-		if (selection == 'b' || selection == 'B')
+		if (selection == 'b' || selection == 'B') // BlackJack
 		{
 			cout << "Loading BlackJack..." << endl;
 			BlackJack * game = new BlackJack();
 			game->play();
-			delete game;
+			delete game; game = NULL;
 		}
-		else if (selection == 'p' || selection == 'P')
+		else if (selection == 'p' || selection == 'P') // Poker
 		{
 			cout << "Loading Poker..." << endl;
 			Poker * game = new Poker();
 			game->play();
-			delete game;
+			delete game; game = NULL;
 		}
-		else if (selection == 't' || selection == 'T')
+		else if (selection == 't' || selection == 'T') // Texas Holdem
 		{
 			cout << "Under construction. . ." << endl << endl;
-			_getch();
+			cin.get();
 		}
-		else if (selection == 'q' || selection == 'Q')
-		{
+		else if (selection == 'q' || selection == 'Q') // Quit
 			break;
-		}
 		else
 			cout << "Please make a selection." << endl << endl;
 	}
