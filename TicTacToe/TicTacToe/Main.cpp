@@ -8,9 +8,9 @@
  ** (but I'm biased haha). If you have idea for cleaning up the code and making it
  ** run more efficient, that would be much appreciated. I will say this is one of
  ** my more favorite projects next to the MaskingPractice one. I'm really trying to 
- ** a really difficult algorithm going for the ComputerAI player. So far
- ** it's programmed to find every lose situation before it checks for a 
- ** win situation.
+ ** compile a really difficult algorithm going for the ComputerAI player. So far
+ ** it's programmed to find every lose-situation before it checks for a 
+ ** win-situation.
 *********************************************************************/
 #include "ComputerAI.h"
 #include "Board.h"
@@ -245,7 +245,7 @@ void playComputer()
 		// Computer's Turn.
 		cout << "***** Computer's Move *****" << endl;
 		// Call the function for the ComputerAI to make it's selection.
-		block = compAI.makeMove(playPieces);
+		block = compAI.makeMove(playPieces, std::vector<int>(NULL));
 		// Create it's game piece.
 		playPieces[block] = 'O';
 		// Print the current game.
